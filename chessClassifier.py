@@ -197,6 +197,50 @@ def load_model():
     return model
 
 
+def rotate_board(chess_board):
+    """Rotates the board 90 degrees counter-clockwise"""
+    R, C = len(chess_board), len(chess_board[0])
+    rotated_board = [[None] * R for _ in range(C)]
+    for c in range(C):
+        for r in range(R - 1, -1, -1):
+            rotated_board[C - c - 1][r] = chess_board[r][c]
+
+    return rotated_board
+
+
+def convert_to_fen(chess_board):
+    fen_piece_map = {
+        "bishop_dark": "b",
+        "bishop_light": "B",
+        "king_dark": "k",
+        "king_light": "K",
+        "knight_dark": "n",
+        "knight_light": "N",
+        "pawn_dark": "p",
+        "pawn_light": "P",
+        "queen_dark": "q",
+        "queen_light": "Q",
+        "rook_dark": "r",
+        "rook_light": "R",
+    }
+
+    fen = ""
+    for row in chess_board:
+        empty_count = 0
+        for square in row:
+            if square == "empty":
+                empty_count += 1
+            else:
+                if empty_count > 0:
+                    fen += str(empty_count)
+                    empty_count = 0
+                fen += fen_piece_map[square]
+        if empty_count > 0:
+            fen += str(empty_count)
+        fen += "/"
+    return fen[:-1]
+
+
 def main():
     # create_model()
     # create_model()
@@ -205,6 +249,9 @@ def main():
     # Load the model
     model = load_model()
     print("Model loaded")
+
+    # Current chess board
+    chess_board = []
 
     # Create dataset
     my_dataset = CustomDataset(root_dir="data/", transform=transform)
@@ -239,7 +286,20 @@ def main():
         with torch.no_grad():
             output = model(images.to(device))
             out_labels = torch.argmax(output, dim=1)
-            print(class_labels[out_labels])
+            chess_board.append(class_labels[out_labels])
+            # print(class_labels[out_labels])
+    # Additions
+    chess_board = [chess_board[i : i + 8] for i in range(0, 64, 8)]
+    # Rotate the board
+    chess_board = rotate_board(chess_board)
+    print("Rotated board:")
+    for row in chess_board:
+        print(row)
+
+    # Convert to FEN
+    fen = convert_to_fen(chess_board)
+    print(fen)
+    print("Done")
 
     return 0
 

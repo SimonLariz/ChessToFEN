@@ -55,7 +55,7 @@ def crop_out_pieces(image):
                 int(j * square_width) : int((j + 1) * square_width),
             ]
             file_name = file_names[j] + rank_names[i]
-            cv2.imwrite("data/" + file_name + ".png", square)
+            cv2.imwrite("data/captures/" + file_name + ".png", square)
 
     print("Done")
 
