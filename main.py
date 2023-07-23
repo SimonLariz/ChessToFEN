@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import pyautogui
 from PIL import Image
 import string
@@ -59,15 +61,70 @@ def crop_out_pieces(image):
 
     print("Done")
 
+import click
+from colorama import Fore, Style
 
+# Function to display the menu options
+def display_menu():
+    # click.clear()
+    click.echo(f"{Fore.YELLOW}Welcome to ChessToFEN!{Style.RESET_ALL}")
+    click.echo("Select an option:")
+    click.echo(f"{Fore.CYAN}1{Style.RESET_ALL}. Capture screen")
+    click.echo(f"{Fore.CYAN}2{Style.RESET_ALL}. Detect board")
+    click.echo(f"{Fore.CYAN}3{Style.RESET_ALL}. Crop out pieces")
+    click.echo(f"{Fore.CYAN}4{Style.RESET_ALL}. Predict pieces")
+    click.echo(f"{Fore.CYAN}5{Style.RESET_ALL}. Convert to FEN")
+    click.echo(f"{Fore.CYAN}6{Style.RESET_ALL}. Settings")
+    click.echo(f"{Fore.RED}0{Style.RESET_ALL}. Exit")
+
+# Function to handle Option 1
+def handle_option_1():
+    click.echo(f"{Fore.GREEN}Option 1 selected!{Style.RESET_ALL}")
+
+# Function to handle Option 2
+def handle_option_2():
+    click.echo(f"{Fore.GREEN}Option 2 selected!{Style.RESET_ALL}")
+
+# Function to handle Option 3
+def handle_option_3():
+    click.echo(f"{Fore.GREEN}Option 3 selected!{Style.RESET_ALL}")
+
+# Function to handle Option 4
+def handle_option_4():
+    click.echo(f"{Fore.GREEN}Option 4 selected!{Style.RESET_ALL}")
+
+
+
+@click.command()
 def main():
-    capture_screen()
+    while True:
+        display_menu()
+        try:
+            choice = int(click.prompt(f"{Fore.YELLOW}Enter your choice:{Style.RESET_ALL}", type=int))
+            if choice == 0:
+                click.echo(f"{Fore.RED}Goodbye!{Style.RESET_ALL}")
+                break
+            elif choice == 1:
+                handle_option_1()
+            elif choice == 2:
+                handle_option_2()
+            elif choice == 3:
+                handle_option_3()
+            else:
+                click.echo(f"{Fore.RED}Invalid choice! Please select a valid option.{Style.RESET_ALL}")
+        except ValueError:
+            click.echo(f"{Fore.RED}Invalid input! Please enter a number.{Style.RESET_ALL}")
+
+if __name__ == "__main__":
+    main()
+
+    '''Main function'''
+    '''capture_screen()
     current_image = cv2.imread("screenshot.png")
     board_img = find_board(current_image)
     if board_img is not None:
-        crop_out_pieces(board_img)
-    print("Done")
-    return 0
+        crop_out_pieces(board_img)'''
+    
 
 
 if __name__ == "__main__":
