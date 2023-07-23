@@ -16,7 +16,7 @@ transform = transforms.Compose(
     [transforms.Resize((128, 128)), transforms.RandomHorizontalFlip(p=0.5)]
 )
 
-train_dataset = torchvision.datasets.ImageFolder(root="Images", transform=transform)
+train_dataset = torchvision.datasets.ImageFolder(root="dataset", transform=transform)
 
 
 class CustomDataset(Dataset):
@@ -45,7 +45,7 @@ class CustomDataset(Dataset):
 def create_model():
     """Creates a model with a pretrained ResNet50 backbone and a custom head"""
     # Instantiate the dataset
-    dataset = CustomDataset(root_dir="Images/", transform=transform)
+    dataset = CustomDataset(root_dir="dataset/", transform=transform)
     print("Dataset instantiated")
 
     # Create the splits
@@ -207,6 +207,46 @@ def rotate_board(chess_board):
 
     return rotated_board
 
+def predict_pieces():
+    """Predicts the pieces on the board"""
+    # Load the model
+    model = load_model()
+    # Create dataset
+    my_dataset = CustomDataset(root_dir="data/", transform=transform)
+    # Create dataloader
+    my_dataloader = torch.utils.data.DataLoader(my_dataset, batch_size=1, shuffle=False)
+    my_dataloader.dataset
+
+    # Move the model to the GPU if available
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    class_labels = [
+        "bishop_dark",
+        "bishop_light",
+        "empty",
+        "king_dark",
+        "king_light",
+        "knight_dark",
+        "knight_light",
+        "pawn_dark",
+        "pawn_light",
+        "queen_dark",
+        "queen_light",
+        "rook_dark",
+        "rook_light",
+    ]
+    chess_board = []
+    # Get batch
+    for images, labels in my_dataloader:
+        # Get predictions
+        with torch.no_grad():
+            output = model(images.to(device))
+            out_labels = torch.argmax(output, dim=1)
+            chess_board.append(class_labels[out_labels])
+    # Convert to 2D array
+    chess_board = [chess_board[i : i + 8] for i in range(0, 64, 8)]
+    # Rotate the board
+    chess_board = rotate_board(chess_board)
+    return chess_board
 
 def convert_to_fen(chess_board):
     fen_piece_map = {
